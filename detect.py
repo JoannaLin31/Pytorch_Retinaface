@@ -1,30 +1,18 @@
 from __future__ import print_function
-import os
+
 import argparse
-import torch
-import torch.backends.cudnn as cudnn
-import numpy as np
-from data import cfg_mnet, cfg_re50
-from layers.functions.prior_box import PriorBox
-from utils.nms.py_cpu_nms import py_cpu_nms
-import cv2
-from models.retinaface import RetinaFace
-from utils.box_utils import decode, decode_landm
 import time
 
-parser = argparse.ArgumentParser(description='Retinaface')
+import cv2
+import numpy as np
+import torch
+import torch.backends.cudnn as cudnn
 
-parser.add_argument('-m', '--trained_model', default='./weights/Resnet50_Final.pth',
-                    type=str, help='Trained state_dict file path to open')
-parser.add_argument('--network', default='resnet50', help='Backbone network mobile0.25 or resnet50')
-parser.add_argument('--cpu', action="store_true", default=False, help='Use cpu inference')
-parser.add_argument('--confidence_threshold', default=0.02, type=float, help='confidence_threshold')
-parser.add_argument('--top_k', default=5000, type=int, help='top_k')
-parser.add_argument('--nms_threshold', default=0.4, type=float, help='nms_threshold')
-parser.add_argument('--keep_top_k', default=750, type=int, help='keep_top_k')
-parser.add_argument('-s', '--save_image', action="store_true", default=True, help='show detection results')
-parser.add_argument('--vis_thres', default=0.6, type=float, help='visualization_threshold')
-args = parser.parse_args()
+from data import cfg_mnet, cfg_re50
+from layers.functions.prior_box import PriorBox
+from models.retinaface import RetinaFace
+from utilsD.box_utils import decode, decode_landm
+from utilsD.nms.py_cpu_nms import py_cpu_nms
 
 
 def check_keys(model, pretrained_state_dict):
@@ -64,6 +52,21 @@ def load_model(model, pretrained_path, load_to_cpu):
 
 
 if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(description='Retinaface')
+
+    parser.add_argument('-m', '--trained_model', default='./weights/Resnet50_Final.pth',
+                        type=str, help='Trained state_dict file path to open')
+    parser.add_argument('--network', default='resnet50', help='Backbone network mobile0.25 or resnet50')
+    parser.add_argument('--cpu', action="store_true", default=False, help='Use cpu inference')
+    parser.add_argument('--confidence_threshold', default=0.02, type=float, help='confidence_threshold')
+    parser.add_argument('--top_k', default=5000, type=int, help='top_k')
+    parser.add_argument('--nms_threshold', default=0.4, type=float, help='nms_threshold')
+    parser.add_argument('--keep_top_k', default=750, type=int, help='keep_top_k')
+    parser.add_argument('-s', '--save_image', action="store_true", default=True, help='show detection results')
+    parser.add_argument('--vis_thres', default=0.6, type=float, help='visualization_threshold')
+    args = parser.parse_args()
+
     torch.set_grad_enabled(False)
     cfg = None
     if args.network == "mobile0.25":
